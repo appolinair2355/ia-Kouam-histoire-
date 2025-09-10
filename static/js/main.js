@@ -11,6 +11,7 @@ const minWordsIn= document.getElementById('minWords');
 const result    = document.getElementById('result');
 
 let history = {};                 // épisode → texte
+let lockUI  = false;              // verrou d’écriture
 
 /* ----------  UTILITAIRE  ---------- */
 async function call(url, body) {
@@ -22,13 +23,33 @@ async function call(url, body) {
     return res.json();
 }
 
+function scrollToResult() {
+    result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function setUI(disabled) {
+    [genBtn, nextBtn, styleBtn].forEach(b => b.disabled = disabled);
+    lockUI = disabled;
+}
+
 /* ----------  GÉNÉRATION  ---------- */
 genBtn.addEventListener('click', async () => {
+    if (lockUI) return;
+
+    /* 1. Validation */
     if (!titreIn.value.trim() || !auteurIn.value.trim() || !contenuIn.value.trim()) {
         alert("Veuillez remplir tous les champs.");
         return;
     }
 
+    /* 2. Verrou + visuel attente */
+    setUI(true);
+    result.style.background = "#fff3cd";
+    result.style.border     = "2px solid #ffc107";
+    result.textContent      = "⏳⏳  Rédaction de l’histoire en cours…";
+    scrollToResult();
+
+    /* 3. Construction du payload */
     const previous = Object.keys(history).sort((a,b)=>+a-+b)
         .map(ep => `Épisode ${ep} : ${history[ep].split('\n')[0]}`).join('\n');
 
@@ -41,27 +62,42 @@ genBtn.addEventListener('click', async () => {
         previous
     };
 
+    /* 4. Appel API */
     const data = await call('/generate', payload);
-    if (data.error) { alert(data.error); return; }
 
-    result.textContent = data.story;
-    history[episodeIn.value] = data.story;
+    /* 5. Affichage final */
+    if (data.error) {
+        alert(data.error);
+        result.textContent = "";
+    } else {
+        result.textContent = data.story;
+        history[episodeIn.value] = data.story;
+    }
+    setUI(false);
+    scrollToResult();
 });
 
 /* ----------  ÉPISODE SUIVANT  ---------- */
 nextBtn.addEventListener('click', () => {
+    if (lockUI) return;
     episodeIn.value = +episodeIn.value + 1;
     contenuIn.value = '';
+    contenuIn.focus();
 });
 
 /* ----------  STYLE + EMOJIS  ---------- */
 styleBtn.addEventListener('click', async () => {
+    if (lockUI) return;
     if (!result.textContent) { alert("Aucun texte à styliser."); return; }
 
-    const data = await call('/style', {text: result.textContent});
-    if (data.error) { alert(data.error); return; }
+    setUI(true);
+    result.textContent = "✨ Stylisation en cours…";
 
-    // on affiche tel quel (OpenAI renvoie déjà **gras** *italique* emojis)
-    result.textContent = data.styled;
+    const data = await call('/style', {text: result.textContent});
+    if (data.error) { alert(data.error); }
+    else            { result.textContent = data.styled; }
+
+    setUI(false);
+    scrollToResult();
 });
-      
+        
