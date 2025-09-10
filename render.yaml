@@ -8,5 +8,7 @@ services:
       - key: PORT
         value: 10000
       - key: OPENAI_API_KEY
-        sync: false   # à remplir dans le dashboard Render
-        
+        sync: false   # à remplir dans le dashboard
+    runtime: python
+    pythonVersion: 3.11          # ← stable avec openai 1.35.3
+    
