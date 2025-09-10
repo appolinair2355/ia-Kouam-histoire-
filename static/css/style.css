@@ -1,7 +1,13 @@
-/* ===== RESET ===== */
-* { box-sizing: border-box; margin: 0; padding: 0; }
+ fadeIn 0.8s ease; }
+ /* ---------- RESET / BASE ---------- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-/* ===== VAR ===== */
 :root {
     --grad: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     --glass: rgba(255, 255, 255, 0.08);
@@ -19,6 +25,7 @@ body {
     color: #fff;
 }
 
+/* ---------- CONTENEUR PRINCIPAL ---------- */
 .glass {
     width: 100%;
     max-width: 700px;
@@ -29,8 +36,15 @@ body {
     border-radius: var(--radius);
     padding: 40px 30px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+    animation: fadeIn 0.8s ease;
 }
 
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- TITRES ---------- */
 .title {
     font-size: 2.5rem;
     font-weight: 700;
@@ -45,6 +59,7 @@ body {
     font-weight: 300;
 }
 
+/* ---------- CHAMPS ---------- */
 .row {
     display: flex;
     gap: 12px;
@@ -52,7 +67,8 @@ body {
     flex-wrap: wrap;
 }
 
-.input, .textarea {
+.input,
+.textarea {
     flex: 1 1 200px;
     padding: 12px 15px;
     border-radius: var(--radius);
@@ -67,6 +83,7 @@ body {
     resize: vertical;
 }
 
+/* ---------- BOUTONS ---------- */
 .controls {
     display: flex;
     flex-wrap: wrap;
@@ -108,20 +125,17 @@ body {
     width: 90px;
 }
 
-.result {
-    margin-top: 25px;
+/* ---------- RÉSULTAT : JAUNE VIF + INDICATEUR ---------- */
+#result {
+    background: #fff3cd;          /* jaune clair */
+    border: 2px solid #ffc107;    /* bordure ambar */
+    color: #333;
     padding: 20px;
-    border-radius: var(--radius);
-    background: rgba(0, 0, 0, 0.25);
+    border-radius: 16px;
     white-space: pre-wrap;
     font-size: 1.05rem;
     line-height: 1.6;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.glass { animation: fadeIn 0.8s ease; }
-  
+    min-height: 120px;            /* évite réduction à 0 */
+    margin-top: 25px;
+    }
+        
