@@ -15,11 +15,12 @@ let lockUI  = false;              // verrou d’écriture
 
 /* ----------  UTILITAIRE  ---------- */
 async function call(url, body) {
-    const res = await fetch(url, {
+    const res = await fetch(window.location.origin + url, {
         method : 'POST',
         headers: {'Content-Type': 'application/json'},
         body   : JSON.stringify(body)
     });
+    if (!res.ok) throw new Error("Erreur réseau " + res.status);
     return res.json();
 }
 
@@ -35,21 +36,17 @@ function setUI(disabled) {
 /* ----------  GÉNÉRATION  ---------- */
 genBtn.addEventListener('click', async () => {
     if (lockUI) return;
-
-    /* 1. Validation */
     if (!titreIn.value.trim() || !auteurIn.value.trim() || !contenuIn.value.trim()) {
         alert("Veuillez remplir tous les champs.");
         return;
     }
 
-    /* 2. Verrou + visuel attente */
     setUI(true);
     result.style.background = "#fff3cd";
     result.style.border     = "2px solid #ffc107";
     result.textContent      = "⏳⏳  Rédaction de l’histoire en cours…";
     scrollToResult();
 
-    /* 3. Construction du payload */
     const previous = Object.keys(history).sort((a,b)=>+a-+b)
         .map(ep => `Épisode ${ep} : ${history[ep].split('\n')[0]}`).join('\n');
 
@@ -62,17 +59,9 @@ genBtn.addEventListener('click', async () => {
         previous
     };
 
-    /* 4. Appel API */
     const data = await call('/generate', payload);
-
-    /* 5. Affichage final */
-    if (data.error) {
-        alert(data.error);
-        result.textContent = "";
-    } else {
-        result.textContent = data.story;
-        history[episodeIn.value] = data.story;
-    }
+    if (data.error) { alert(data.error); result.textContent = ""; }
+    else            { result.textContent = data.story; history[episodeIn.value] = data.story; }
     setUI(false);
     scrollToResult();
 });
@@ -92,11 +81,9 @@ styleBtn.addEventListener('click', async () => {
 
     setUI(true);
     result.textContent = "✨ Stylisation en cours…";
-
     const data = await call('/style', {text: result.textContent});
     if (data.error) { alert(data.error); }
     else            { result.textContent = data.styled; }
-
     setUI(false);
     scrollToResult();
 });
