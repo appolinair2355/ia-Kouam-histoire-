@@ -2,6 +2,7 @@ import os
 from flask import Flask, request, render_template, jsonify
 from dotenv import load_dotenv
 from openai import OpenAI
+import logging
 
 load_dotenv()
 app = Flask(__name__)
@@ -13,12 +14,14 @@ def get_client():
     global client
     if client is None:
         key = os.getenv("OPENAI_API_KEY")
+        app.logger.info("Clé récupérée : %s", key[:8] + "…" if key else "VIDE")
         if not key:
-            raise RuntimeError("OPENAI_API_KEY absente au runtime")
+            raise RuntimeError("OPENAI_API_KEY manquante au runtime")
         client = OpenAI(api_key=key)
     return client
 # -----------------------------------------------
 
+logging.basicConfig(level=logging.INFO)
 PORT = int(os.getenv("PORT", 10000))
 
 @app.route("/")
@@ -27,7 +30,7 @@ def index():
 
 @app.route("/generate", methods=["POST"])
 def generate():
-    cli = get_client()          # ← instanciation paresseuse
+    cli = get_client()
     data     = request.get_json()
     titre    = data["titre"]
     episode  = data["episode"]
@@ -61,11 +64,12 @@ Signature développeur : Sossou Kouamé.
             story += "\n\nDéveloppé par Sossou Kouamé."
         return jsonify({"story": story})
     except Exception as e:
+        app.logger.exception("OpenAI plante : %s", e)
         return jsonify({"error": str(e)}), 500
 
 @app.route("/style", methods=["POST"])
 def style():
-    cli = get_client()          # ← instanciation paresseuse
+    cli = get_client()
     text = request.get_json()["text"]
     try:
         resp = cli.chat.completions.create(
@@ -77,6 +81,7 @@ def style():
         )
         return jsonify({"styled": resp.choices[0].message.content})
     except Exception as e:
+        app.logger.exception("Style plante : %s", e)
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
