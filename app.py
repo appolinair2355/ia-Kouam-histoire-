@@ -6,6 +6,7 @@ import logging
 
 load_dotenv()
 app = Flask(__name__)
+logging.basicConfig(level=logging.INFO)
 
 # ----------  INITIALISATION DIFFÉRÉE  ----------
 client = None
@@ -14,14 +15,17 @@ def get_client():
     global client
     if client is None:
         key = os.getenv("OPENAI_API_KEY")
-        app.logger.info("Clé récupérée : %s", key[:8] + "…" if key else "VIDE")
+        print(">>> Clé API trouvée :", key[:8] + "…" if key else "VIDE")
         if not key:
-            raise RuntimeError("OPENAI_API_KEY manquante au runtime")
-        client = OpenAI(api_key=key)
+            raise RuntimeError("OPENAI_API_KEY absente au runtime")
+        try:
+            client = OpenAI(api_key=key)
+        except Exception as e:
+            print(">>> Erreur OpenAI :", e)
+            raise RuntimeError("Impossible de créer le client OpenAI : " + str(e))
     return client
 # -----------------------------------------------
 
-logging.basicConfig(level=logging.INFO)
 PORT = int(os.getenv("PORT", 10000))
 
 @app.route("/")
@@ -64,11 +68,11 @@ Signature développeur : Sossou Kouamé.
             story += "\n\nDéveloppé par Sossou Kouamé."
         return jsonify({"story": story})
     except Exception as e:
-        app.logger.exception("OpenAI plante : %s", e)
+        logging.exception("OpenAI plante : %s", e)
         return jsonify({"error": str(e)}), 500
 
 @app.route("/style", methods=["POST"])
-def style():
+def style(){
     cli = get_client()
     text = request.get_json()["text"]
     try:
@@ -81,7 +85,7 @@ def style():
         )
         return jsonify({"styled": resp.choices[0].message.content})
     except Exception as e:
-        app.logger.exception("Style plante : %s", e)
+        logging.exception("Style plante : %s", e)
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
