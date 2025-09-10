@@ -14,6 +14,7 @@
         <h1 class="title">Ai Kouamé</h1>
         <p class="subtitle">Raconte-moi une histoire… épisode après épisode</p>
 
+        <!-- === CHAMPS (IDs OBLIGATOIRES) === -->
         <div class="row">
             <input id="titre" class="input" placeholder="Titre général">
             <input id="episode" class="input" type="number" min="1" value="1">
@@ -22,6 +23,7 @@
 
         <textarea id="contenu" class="textarea" rows="6" placeholder="Décris l'épisode ou dis-moi ce que tu veux modifier…"></textarea>
 
+        <!-- === BOUTONS (IDs OBLIGATOIRES) === -->
         <div class="controls">
             <button id="genBtn" class="btn btn-green">Générer l’épisode</button>
             <label class="label">Mots min
@@ -31,10 +33,11 @@
             <button id="styleBtn" class="btn btn-blue">S (style + emojis)</button>
         </div>
 
+        <!-- === ZONE RÉSULTAT === -->
         <pre id="result" class="result"></pre>
     </div>
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
-  </html>
-                                                                                                                              
+        </html>
+        
