@@ -8,7 +8,6 @@ load_dotenv()
 app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 
-# ----------  INITIALISATION DIFFÉRÉE  ----------
 client = None
 
 def get_client():
@@ -24,7 +23,6 @@ def get_client():
             print(">>> Erreur OpenAI :", e)
             raise RuntimeError("Impossible de créer le client OpenAI : " + str(e))
     return client
-# -----------------------------------------------
 
 PORT = int(os.getenv("PORT", 10000))
 
@@ -71,8 +69,8 @@ Signature développeur : Sossou Kouamé.
         logging.exception("OpenAI plante : %s", e)
         return jsonify({"error": str(e)}), 500
 
-@app.route("/style", methods=["POST"])
-def style(){
+@app.route("/style", methods=["POST"])   # ← syntaxe corrigée
+def style():
     cli = get_client()
     text = request.get_json()["text"]
     try:
@@ -90,3 +88,4 @@ def style(){
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=PORT)
+    
