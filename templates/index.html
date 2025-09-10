@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ai Kouamé – Générateur d’histoires</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="glass">
+        <h1 class="title">Ai Kouamé</h1>
+        <p class="subtitle">Raconte-moi une histoire… épisode après épisode</p>
+
+        <div class="row">
+            <input id="titre" class="input" placeholder="Titre général">
+            <input id="episode" class="input" type="number" min="1" value="1">
+            <input id="auteur" class="input" placeholder="Ton nom">
+        </div>
+
+        <textarea id="contenu" class="textarea" rows="6" placeholder="Décris l'épisode ou dis-moi ce que tu veux modifier…"></textarea>
+
+        <div class="controls">
+            <button id="genBtn" class="btn btn-green">Générer l’épisode</button>
+            <label class="label">Mots min
+                <input id="minWords" class="input small" type="number" value="300" min="50" max="2000" step="50">
+            </label>
+            <button id="nextBtn" class="btn btn-pink">Épisode suivant ➜</button>
+            <button id="styleBtn" class="btn btn-blue">S (style + emojis)</button>
+        </div>
+
+        <pre id="result" class="result"></pre>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+  </html>
+                                                                                                                              
